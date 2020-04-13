@@ -390,7 +390,7 @@ public class FlutterPluginPlaylistPlugin implements MethodCallHandler, RmxConsta
       Log.e(TAG, "Exception while raising onStatus: ", e);
     }
 
-    Log.v(TAG, "statusChanged:" + status.toString());
+    // Log.v(TAG, "statusChanged:" + status.toString());
 
     channel.invokeMethod(RmxConstants.STATUS, status);
   }
