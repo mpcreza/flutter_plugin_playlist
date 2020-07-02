@@ -81,7 +81,7 @@ public class PlaylistManager extends ListPlaylistManager<AudioTrack> implements 
             public DataSource.Factory provide(String userAgent, TransferListener listener) {
                 // Updates the network data source to use the OKHttp implementation and allows it to follow redirects
                 OkHttpClient httpClient = new OkHttpClient().newBuilder().followRedirects(true).followSslRedirects(true).build();
-                DataSource.Factory upstreamFactory = new OkHttpDataSourceFactory(httpClient, userAgent, listener);
+                DataSource.Factory upstreamFactory = new OkHttpDataSourceFactory(httpClient, "PlaylistManager", listener);
 
                 // Adds a cache around the upstreamFactory.
                 // This sets a cache of 100MB, we might make this configurable.
