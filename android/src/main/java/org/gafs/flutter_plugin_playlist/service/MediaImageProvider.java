@@ -48,7 +48,7 @@ public class MediaImageProvider implements ImageProvider<AudioTrack> {
         // R.drawable.img_playlist_notif_default
         // R.drawable.img_playlist_artwork_default
         defaultNotificationImage = BitmapFactory.decodeResource(context.getResources(), fakeR.getId("drawable", "img_playlist_notif_default"));
-        defaultArtworkImage = BitmapFactory.decodeResource(context.getResources(), fakeR.getId("drawable", "img_playlist_artwork_default"));
+        defaultArtworkImage = BitmapFactory.decodeResource(context.getResources(), fakeR.getId("drawable", "img_playlist_notif_default"));
     }
 
     @Override
