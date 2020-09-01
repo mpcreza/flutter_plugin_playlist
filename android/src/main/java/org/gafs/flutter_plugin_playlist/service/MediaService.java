@@ -22,20 +22,25 @@ public class MediaService extends BasePlaylistService<AudioTrack, PlaylistManage
         // Adds the audio player implementation, otherwise there's nothing to play media with
         AudioApi newAudio = new AudioApi(getApplicationContext());
         newAudio.addErrorListener(getPlaylistManager());
-        getPlaylistManager().getMediaPlayers().add(newAudio);
-        getPlaylistManager().onMediaServiceInit(true);
+
+        if(getPlaylistManager() != null) {
+            getPlaylistManager().getMediaPlayers().add(newAudio);
+            getPlaylistManager().onMediaServiceInit(true);
+        }
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        // Releases and clears all the MediaPlayersMediaImageProvider
-        for (MediaPlayerApi<AudioTrack> player : getPlaylistManager().getMediaPlayers()) {
-            player.release();
-        }
+        if(getPlaylistManager() != null) {
+            // Releases and clears all the MediaPlayersMediaImageProvider
+            for (MediaPlayerApi<AudioTrack> player : getPlaylistManager().getMediaPlayers()) {
+                player.release();
+            }
 
-        getPlaylistManager().getMediaPlayers().clear();
+            getPlaylistManager().getMediaPlayers().clear();
+        }
     }
 
     @Override
