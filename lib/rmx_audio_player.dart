@@ -19,8 +19,8 @@ class RmxAudioPlayer {
   static const MethodChannel _channel =
       const MethodChannel('flutter_plugin_playlist');
 
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
+  static Future<String?> get platformVersion async {
+    final String? version = await _channel.invokeMethod('getPlatformVersion');
     return version;
   }
 
@@ -29,13 +29,13 @@ class RmxAudioPlayer {
       new AudioPlayerOptions(verbose: false, resetStreamOnPause: false);
 
   bool _inititialized = false;
-  Completer _initCompleter;
+  late Completer _initCompleter;
 
   /// 'unknown' | 'ready' | 'error' | 'playing' | 'loading' | 'paused' | 'stopped'
-  String _currentState = 'unknown';
+  String? _currentState = 'unknown';
   bool _hasError = false;
   bool _hasLoaded = false;
-  AudioTrack _currentItem;
+  AudioTrack? _currentItem;
 
   /// The current summarized state of the player, as a string. It is preferred that you use the 'isX' accessors,
   /// because they properly interpret the range of these values, but this field is exposed if you wish to observe
@@ -49,7 +49,7 @@ class RmxAudioPlayer {
     return this._inititialized;
   }
 
-  AudioTrack get currentTrack {
+  AudioTrack? get currentTrack {
     return this._currentItem;
   }
 
@@ -158,13 +158,13 @@ class RmxAudioPlayer {
   /// playlist to a new set of tracks, but retain the currently-playing item to avoid skipping.
   ////
   Future<dynamic> setPlaylistItems(List<AudioTrack> items,
-      {PlaylistItemOptions options}) {
+      {PlaylistItemOptions? options}) {
     return _exec('setPlaylistItems',
         {'items': this._validateTracks(items), 'options': options?.toJson()});
   }
 
   /// Add a single track to the end of the playlist
-  Future<dynamic> addItem(AudioTrack trackItem, {int index}) async {
+  Future<dynamic> addItem(AudioTrack trackItem, {int? index}) async {
     var validTrackItem = this._validateTrack(trackItem);
     if (validTrackItem == null) {
       throw new Exception('Provided track is null or not an audio track');
@@ -176,7 +176,7 @@ class RmxAudioPlayer {
   }
 
   /// Adds the list of tracks to the end of the playlist.
-  Future<dynamic> addAllItems(List<AudioTrack> items, {int index}) {
+  Future<dynamic> addAllItems(List<AudioTrack> items, {int? index}) {
     return _exec('addAllItems', {
       'items': this._validateTracks(items),
       'index': index,
@@ -220,12 +220,12 @@ class RmxAudioPlayer {
   }
 
   /// Play the track at the given index. If the track does not exist, this has no effect.
-  Future<dynamic> playTrackByIndex(num index, {num position}) {
+  Future<dynamic> playTrackByIndex(num index, {num? position}) {
     return _exec('playTrackByIndex', {'index': index, 'position': position});
   }
 
   /// Play the track matching the given trackId. If the track does not exist, this has no effect.
-  Future<dynamic> playTrackById(String trackId, {num position}) {
+  Future<dynamic> playTrackById(String trackId, {num? position}) {
     return _exec(
         'playTrackById', {'trackId': trackId, 'position': position ?? 0});
   }
@@ -314,12 +314,12 @@ class RmxAudioPlayer {
   /// @internal
   /// Call this function to emit an onStatus event via the on('status') handler.
   /// Internal use only, to raise events received from the native interface.
-  Future<void> _onStatus(String trackId, int type, dynamic value) async {
+  Future<void> _onStatus(String? trackId, int? type, dynamic value) async {
     var status =
         new OnStatusCallbackData(type: type, trackId: trackId, value: value);
-    if (this.options.verbose) {
+    if (this.options.verbose!) {
       print(
-          'RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type]}($type) [$trackId]: $value');
+          'RmxAudioPlayer.onStatus: ${RmxAudioStatusMessageDescriptions[type!]}($type) [$trackId]: $value');
     }
 
     if (status.type == RmxAudioStatusMessage.RMXSTATUS_TRACK_CHANGED) {
@@ -330,9 +330,9 @@ class RmxAudioPlayer {
     }
 
     // The plugin's status changes only in response to specific events.
-    if (itemStatusChangeTypes.indexOf(status.type) >= 0) {
+    if (itemStatusChangeTypes.indexOf(status.type!) >= 0) {
       // Only change the plugin's ///current status/// if the event being raised is for the current active track.
-      if (this._currentItem != null && this._currentItem.trackId == trackId) {
+      if (this._currentItem != null && this._currentItem!.trackId == trackId) {
         if (status.value != null && status.value['status'] != null) {
           this._currentState = status.value['status'];
         }
@@ -360,7 +360,7 @@ class RmxAudioPlayer {
       this.handlers[eventName] = [];
     }
 
-    this.handlers[eventName].add(callback);
+    this.handlers[eventName]!.add(callback);
   }
 
   /// Remove an event handler from the plugin
@@ -369,7 +369,7 @@ class RmxAudioPlayer {
   /// that was passed in to create the subscription!
   off(String eventName, AudioPlayerEventHandler handler) {
     if (this.handlers[eventName] != null) {
-      this.handlers[eventName].remove(handler);
+      this.handlers[eventName]!.remove(handler);
     }
   }
 
@@ -380,7 +380,7 @@ class RmxAudioPlayer {
     var handler = this.handlers[eventName];
     if (handler != null) {
       for (var i = 0; i < handler.length; i++) {
-        var callback = this.handlers[eventName][i];
+        var callback = this.handlers[eventName]![i];
         if (callback != null) {
           callback(eventName, args: args);
         }

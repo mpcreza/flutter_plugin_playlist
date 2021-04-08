@@ -10,7 +10,7 @@ typedef AudioPlayerEventHandler = Function(String eventname, {dynamic args});
 class AudioPlayerEventHandlers {
   Map<String, List<AudioPlayerEventHandler>> _map = new Map();
 
-  List<AudioPlayerEventHandler> operator [](String key) {
+  List<AudioPlayerEventHandler>? operator [](String key) {
     return _map[key];
   }
 
@@ -22,7 +22,7 @@ class AudioPlayerEventHandlers {
 /// Options governing the overall behavior of the audio player plugin
 class AudioPlayerOptions {
   /// Should the plugin's javascript dump the status message stream to the javascript console?
-  final bool verbose;
+  final bool? verbose;
 
   /// If true, when pausing a live stream, play will continue from the LIVE POSITION (e.g. the stream
   /// jumps forward to the current point in time, rather than picking up where it left off when you paused).
@@ -30,7 +30,7 @@ class AudioPlayerOptions {
   /// buffer fills, it will jump forward to the current point in time, cause a disjoint in playback.
   ///
   /// Default is true.
-  final bool resetStreamOnPause;
+  final bool? resetStreamOnPause;
 
   const AudioPlayerOptions({this.resetStreamOnPause, this.verbose});
 
@@ -51,19 +51,19 @@ class AudioPlayerOptions {
 class PlaylistItemOptions {
   /// If true, the plugin will continue playback from the current playback position after
   /// setting the items to the playlist.
-  final bool retainPosition;
+  final bool? retainPosition;
 
   /// If retainPosition is true, this value will tell the plugin the exact time to start from,
   /// rather than letting the plugin decide based on current playback.
-  final int playFromPosition;
+  final int? playFromPosition;
 
   /// If retainPosition is true, this value will tell the plugin the uid of the "current" item to start from,
   /// rather than letting the plugin decide based on current playback.
-  final String playFromId;
+  final String? playFromId;
 
   /// If playback should immediately begin when calling setPlaylistItems on the plugin.
   /// Default is false;
-  final bool startPaused;
+  final bool? startPaused;
 
   const PlaylistItemOptions({
     this.playFromId,
@@ -88,10 +88,10 @@ class PlaylistItemOptions {
 class AudioTrack {
   /// This item is a streaming asset. Make sure this is set to true for stream URLs,
   /// otherwise you will get odd behavior when the asset is paused.
-  final bool isStream;
+  final bool? isStream;
 
   /// trackId is optional and if not passed in, an auto-generated UUID will be used.
-  String trackId;
+  String? trackId;
 
   /// URL of the asset; can be local, a URL, or a streaming URL.
   /// If the asset is a stream, make sure that isStream is set to true,
@@ -101,7 +101,7 @@ class AudioTrack {
   /// The local or remote URL to an image asset to be shown for this track.
   /// If this is null, the plugin's default image is used.
   /// This field is not used on iOS (yet)
-  final String albumArt;
+  final String? albumArt;
 
   /// The track's artist
   final String artist;
@@ -115,11 +115,11 @@ class AudioTrack {
   AudioTrack(
       {this.trackId,
       this.isStream = false,
-      this.album,
+      required this.album,
       this.albumArt,
-      this.artist,
-      this.assetUrl,
-      this.title})
+      required this.artist,
+      required this.assetUrl,
+      required this.title})
       : assert(album != null),
         assert(artist != null),
         assert(assetUrl != null),
@@ -156,10 +156,10 @@ class AudioTrack {
 /// Index will be preferred if both index and ID are passed.
 class AudioTrackRemoval {
   /// The track ID to remove
-  final String trackId;
+  final String? trackId;
 
   /// The index of a track to remove.
-  final num trackIndex;
+  final num? trackIndex;
 
   const AudioTrackRemoval({this.trackId, this.trackIndex});
 
@@ -177,10 +177,10 @@ class AudioTrackRemoval {
 class OnStatusCallbackData {
   /// The ID of this track. If the track is null or has completed, this value is "NONE"
   /// If the playlist is completed, this value is "INVALID"
-  final String trackId;
+  final String? trackId;
 
   /// The type of status update
-  final int type;
+  final int? type;
 
   /// The status payload. For all updates except ERROR, the data package is described by OnStatusCallbackUpdateData.
   /// For Errors, the data is shaped as OnStatusErrorCallbackData
@@ -205,22 +205,22 @@ class OnStatusCallbackData {
 class OnStatusTrackChangedData {
   /// The new track that has been selected. May be null if you are at the end of the playlist,
   /// or the playlist has been emptied.
-  final AudioTrack currentItem;
+  final AudioTrack? currentItem;
 
   /// The 0-based index of the new track. If the playlist has ended or been cleared, this will be -1.
-  final num currentIndex;
+  final num? currentIndex;
 
   /// Indicates whether the playlist is now currently at the last item in the list.
-  final bool isAtEnd;
+  final bool? isAtEnd;
 
   /// Indicates whether the playlist is now at the first item in the list
-  final bool isAtBeginning;
+  final bool? isAtBeginning;
 
   /// Indicates if there are additional playlist items after the current item.
-  final bool hasNext;
+  final bool? hasNext;
 
   /// Indicates if there are any items before this one in the playlist.
-  final bool hasPrevious;
+  final bool? hasPrevious;
 
   const OnStatusTrackChangedData({
     this.currentIndex,
@@ -250,40 +250,40 @@ class OnStatusCallbackUpdateData {
   /// The ID of this track corresponding to this event. If the track is null or has completed, this value is "NONE".
   /// This will happen when skipping to the beginning or end of the playlist.
   /// If the playlist is completed, this value is "INVALID"
-  final String trackId;
+  final String? trackId;
 
   /// Boolean indicating whether this is a streaming track.
-  final bool isStream;
+  final bool? isStream;
 
   /// The current index of the track in the playlist.
-  final num currentIndex;
+  final num? currentIndex;
 
   /// The current status of the track, as a string. This is used
   /// to summarize the various event states that a track can be in; e.g. "playing" is true for any number
   /// of track statuses. The Javascript interface takes care of this for you; this field is here only for reference.
   /// 'unknown' | 'ready' | 'error' | 'playing' | 'loading' | 'paused'
-  final String status;
+  final String? status;
 
   /// Current playback position of the reported track.
-  final num currentPosition;
+  final num? currentPosition;
 
   /// The known duration of the reported track. For streams or malformed MP3's, this value will be 0.
-  final num duration;
+  final num? duration;
 
   /// Progress of track playback, as a percent, in the range 0 - 100
-  final num playbackPercent;
+  final num? playbackPercent;
 
   /// Buffering progress of the track, as a percent, in the range 0 - 100
-  final num bufferPercent;
+  final num? bufferPercent;
 
   /// The starting position of the buffering progress. For now, this is always reported as 0.
-  final num bufferStart;
+  final num? bufferStart;
 
   /// The maximum position, in seconds, of the track buffer. For now, only the buffer with the maximum
   /// playback position is reported, even if there are other segments (due to seeking, for example).
   /// Practically speaking you don't need to worry about that, as in both implementations the
   /// minor gaps are automatically filled in by the underlying players.
-  final num bufferEnd;
+  final num? bufferEnd;
 
   const OnStatusCallbackUpdateData(
       {this.status,
@@ -318,10 +318,10 @@ class OnStatusCallbackUpdateData {
 /// Represents an error reported by the onStatus callback.
 class OnStatusErrorCallbackData {
   /// Error code
-  final RmxAudioErrorType code;
+  final RmxAudioErrorType? code;
 
   /// The error, as a message
-  final String message;
+  final String? message;
 
   const OnStatusErrorCallbackData({this.code, this.message});
 

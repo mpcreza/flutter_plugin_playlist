@@ -11,13 +11,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  double _seeking;
+  double? _seeking;
   double _position = 0;
 
-  int _current = 0;
-  int _total = 0;
+  int? _current = 0;
+  int? _total = 0;
 
-  String _status = 'none';
+  String? _status = 'none';
 
   @override
   void initState() {
@@ -30,15 +30,15 @@ class _MyAppState extends State<MyApp> {
 
       if ((args as OnStatusCallbackData).value != null) {
         setState(() {
-          if ((args as OnStatusCallbackData).value['currentPosition'] != null) {
+          if (args.value['currentPosition'] != null) {
             _current =
-                (args as OnStatusCallbackData).value['currentPosition'].toInt();
-            _total = (((args as OnStatusCallbackData).value['duration']) ?? 0)
+                args.value['currentPosition'].toInt();
+            _total = ((args.value['duration']) ?? 0)
                 .toInt();
-            _status = (args as OnStatusCallbackData).value['status'];
+            _status = args.value['status'];
 
-            if (_current > 0 && _total > 0) {
-              _position = _current / _total;
+            if (_current! > 0 && _total! > 0) {
+              _position = _current! / _total!;
             } else if (!rmxAudioPlayer.isLoading && !rmxAudioPlayer.isSeeking) {
               _position = 0;
             }
@@ -143,19 +143,19 @@ class _MyAppState extends State<MyApp> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              new Text(_format(_current)),
-              new Text(_format(_total))
+              new Text(_format(_current!)),
+              new Text(_format(_total!))
             ],
           ),
           Slider(
             value: _seeking ?? _position,
             onChangeEnd: (val) async {
-              if (_total > 0) {
-                await rmxAudioPlayer.seekTo(val * _total);
+              if (_total! > 0) {
+                await rmxAudioPlayer.seekTo(val * _total!);
               }
             },
             onChanged: (val) {
-              if (_total > 0) {
+              if (_total! > 0) {
                 setState(() {
                   _seeking = val;
                 });
