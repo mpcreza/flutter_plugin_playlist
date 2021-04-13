@@ -32,7 +32,7 @@ class RmxAudioPlayer {
   late Completer _initCompleter;
 
   /// 'unknown' | 'ready' | 'error' | 'playing' | 'loading' | 'paused' | 'stopped'
-  String? _currentState = 'unknown';
+  String _currentState = 'unknown';
   bool _hasError = false;
   bool _hasLoaded = false;
   AudioTrack? _currentItem;
